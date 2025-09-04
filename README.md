@@ -22,12 +22,19 @@ CompanionAI is a mental health support system that combines **Natural Language P
 
 ## Project Structure
 CompanionAI/
-├── models/ # CNN models (PyTorch + NumPy implementations) &nbsp
+
+├── models/ # CNN models (PyTorch + NumPy implementations)
+
 ├── nlp/ # NLP pipeline for intent and emotion detection
+
 ├── backend/ # FastAPI backend code
+
 ├── frontend/ # React frontend
+
 ├── utils/ # Helper functions
+
 ├── requirements.txt
+
 └── README.md
 
 ---
