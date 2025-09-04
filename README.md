@@ -14,7 +14,7 @@ CompanionAI is a mental health support system that combines **Natural Language P
   - Empathetic dialogue generation
 
 - **Full-Stack Integration**
-  - Backend powered by **FastAPI**
+  - Backend powered by **Gradio**
   - Frontend built in **React** with Firebase authentication
   - Model hosting and deployment on Hugging Face Spaces
 
