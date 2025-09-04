@@ -1,0 +1,12 @@
+gradio
+torch
+torchvision
+transformers
+numpy
+Pillow
+huggingface_hub
+regex
+accelerate
+bitsandbytes
+python-dotenv
+requests
