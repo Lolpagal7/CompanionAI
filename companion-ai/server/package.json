@@ -1,0 +1,27 @@
+{
+  "name": "companion-ai-server",
+  "version": "1.0.0",
+  "description": "Secure backend server for Companion AI with Firebase proxy",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "node --loader ts-node/esm index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.18.2",
+    "firebase-admin": "^12.7.0",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.24",
+    "@types/multer": "^1.4.7",
+    "@types/node": "^18.19.130",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

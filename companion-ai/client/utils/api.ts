@@ -1,8 +1,8 @@
 // WORKING GRADIO HTTP APPROACH - NO CLIENT DEPENDENCY ISSUES!
 import { Client, handle_file } from "@gradio/client";
 
-const GRADIO_SPACE_URL = "https://lolpagal7-companion-ai-backend.hf.space";
-const HF_TOKEN = "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";
+const GRADIO_SPACE_URL = import.meta.env.VITE_GRADIO_SPACE_URL;
+const HF_TOKEN = import.meta.env.VITE_HF_TOKEN;
 
 // Convert File to base64 for Gradio
 async function fileToBase64(file: File): Promise<string> {

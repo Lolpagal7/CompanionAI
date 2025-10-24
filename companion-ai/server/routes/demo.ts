@@ -1,9 +1,10 @@
-import { RequestHandler } from "express";
-import { DemoResponse } from "@shared/api";
+import { Request, Response } from "express";
 
-export const handleDemo: RequestHandler = (req, res) => {
-  const response: DemoResponse = {
-    message: "Hello from Express server",
+export function handleDemo(req: Request, res: Response) {
+  const response = {
+    message: "Secure Companion AI Server - Demo Route",
+    timestamp: new Date().toISOString(),
+    secure: true
   };
   res.status(200).json(response);
-};
+}

@@ -2,11 +2,11 @@ import torch
 import torch.nn.functional as F
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, BlenderbotTokenizer, BlenderbotForConditionalGeneration
 try:
-    from utils.goemotions_loader import load_goemotions, clear_goemotions
+    from utils.goemotions_loader import load_goemotions as utils_load_goemotions, clear_goemotions as utils_clear_goemotions
 except ImportError:
     print("[WARNING] goemotions_loader not found, using fallback")
-    def load_goemotions(): return None, None
-    def clear_goemotions(): pass
+    def utils_load_goemotions(): return None, None
+    def utils_clear_goemotions(): pass
 import re
 import datetime
 import threading
@@ -15,8 +15,6 @@ import gc
 # ------------ EMOTION DETECTOR (GoEmotions) ------------ #
 
 emotion_model_name = "SamLowe/roberta-base-go_emotions"
-# emotion_tokenizer = AutoTokenizer.from_pretrained(emotion_model_name)
-# emotion_model = AutoModelForSequenceClassification.from_pretrained(emotion_model_name)
 
 emotion_to_intent = {
     "admiration": "happy", "amusement": "happy", "approval": "happy", "caring": "happy", "curiosity": "general_help",
@@ -39,86 +37,102 @@ suicide_keywords = [
 # ------------ BLENDERBOT (NLG) SETUP ------------ #
 
 blender_model_name = "facebook/blenderbot-400M-distill"
-# blender_tokenizer = BlenderbotTokenizer.from_pretrained(blender_model_name)
-# blender_model = BlenderbotForConditionalGeneration.from_pretrained(blender_model_name)
 
-# ------------ LAZY LOADING FOR NLP MODELS ------------ #
-_emotion_tokenizer_cache = None
-_emotion_model_cache = None
-_blender_tokenizer_cache = None
-_blender_model_cache = None
+# ------------ LAZY LOADING FOR NLP MODELS (COMMENTED OUT) ------------ #
+# _emotion_tokenizer_cache = None
+# _emotion_model_cache = None
+# _blender_tokenizer_cache = None
+# _blender_model_cache = None
 
-_goemotions_tokenizer = None
-_goemotions_model = None
-_goemotions_lock = threading.Lock()
+# _goemotions_tokenizer = None
+# _goemotions_model = None
+# _goemotions_lock = threading.Lock()
 
 def load_emotion_tokenizer():
-    global _emotion_tokenizer_cache
-    if _emotion_tokenizer_cache is None:
-        _emotion_tokenizer_cache = AutoTokenizer.from_pretrained(emotion_model_name)
-    return _emotion_tokenizer_cache
+    # global _emotion_tokenizer_cache
+    # if _emotion_tokenizer_cache is None:
+    #     _emotion_tokenizer_cache = AutoTokenizer.from_pretrained(emotion_model_name)
+    # return _emotion_tokenizer_cache
+    # Direct loading instead of caching
+    return AutoTokenizer.from_pretrained(emotion_model_name)
 
 def load_emotion_model():
-    global _emotion_model_cache
-    if _emotion_model_cache is None:
-        _emotion_model_cache = AutoModelForSequenceClassification.from_pretrained(emotion_model_name)
-    return _emotion_model_cache
+    # global _emotion_model_cache
+    # if _emotion_model_cache is None:
+    #     _emotion_model_cache = AutoModelForSequenceClassification.from_pretrained(emotion_model_name)
+    # return _emotion_model_cache
+    # Direct loading instead of caching
+    return AutoModelForSequenceClassification.from_pretrained(emotion_model_name)
 
 def load_blender_tokenizer():
-    global _blender_tokenizer_cache
-    if _blender_tokenizer_cache is None:
-        _blender_tokenizer_cache = BlenderbotTokenizer.from_pretrained(blender_model_name)
-    return _blender_tokenizer_cache
+    # global _blender_tokenizer_cache
+    # if _blender_tokenizer_cache is None:
+    #     _blender_tokenizer_cache = BlenderbotTokenizer.from_pretrained(blender_model_name)
+    # return _blender_tokenizer_cache
+    # Direct loading instead of caching
+    return BlenderbotTokenizer.from_pretrained(blender_model_name)
 
 def load_blender_model():
-    global _blender_model_cache
-    if _blender_model_cache is None:
-        _blender_model_cache = BlenderbotForConditionalGeneration.from_pretrained(blender_model_name)
-    return _blender_model_cache
+    # global _blender_model_cache
+    # if _blender_model_cache is None:
+    #     _blender_model_cache = BlenderbotForConditionalGeneration.from_pretrained(blender_model_name)
+    # return _blender_model_cache
+    # Direct loading instead of caching
+    return BlenderbotForConditionalGeneration.from_pretrained(blender_model_name)
 
 def get_goemotions():
-    global _goemotions_tokenizer, _goemotions_model
-    if _goemotions_tokenizer is None or _goemotions_model is None:
-        print("[INFO] Loading GoEmotions model in optimized precision...")
-        from transformers import AutoTokenizer, AutoModelForSequenceClassification
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        _goemotions_tokenizer = AutoTokenizer.from_pretrained(emotion_model_name)
-        _goemotions_model = AutoModelForSequenceClassification.from_pretrained(
-            emotion_model_name,
-            torch_dtype=torch.float16 if device == "cuda" else torch.float32
-        )
-        _goemotions_model.to(device)
-    return _goemotions_tokenizer, _goemotions_model
-
-def clear_goemotions():
-    """
-    Frees GoEmotions tokenizer and clears memory.
-    """
-    global _goemotions_tokenizer, _goemotions_model
-    with _goemotions_lock:
-        _goemotions_tokenizer = None
-        _goemotions_model = None
-        gc.collect()
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-
-def get_goemotions():
-    """Load GoEmotions tokenizer (cached) and model (per-call, low memory)."""
-    global _goemotions_tokenizer
-    if _goemotions_tokenizer is None:
-        _goemotions_tokenizer = AutoTokenizer.from_pretrained(emotion_model_name)
+    """Load GoEmotions tokenizer and model directly (no caching)."""
+    # global _goemotions_tokenizer, _goemotions_model
+    # if _goemotions_tokenizer is None or _goemotions_model is None:
+    #     print("[INFO] Loading GoEmotions model in optimized precision...")
+    #     from transformers import AutoTokenizer, AutoModelForSequenceClassification
+    #     device = "cuda" if torch.cuda.is_available() else "cpu"
+    #     _goemotions_tokenizer = AutoTokenizer.from_pretrained(emotion_model_name)
+    #     _goemotions_model = AutoModelForSequenceClassification.from_pretrained(
+    #         emotion_model_name,
+    #         torch_dtype=torch.float16 if device == "cuda" else torch.float32
+    #     )
+    #     _goemotions_model.to(device)
+    # return _goemotions_tokenizer, _goemotions_model
+    
+    # Direct loading without caching
     try:
+        tokenizer = AutoTokenizer.from_pretrained(emotion_model_name)
         model = AutoModelForSequenceClassification.from_pretrained(
-            emotion_model_name, low_cpu_mem_usage=True, torch_dtype=torch.float16
+            emotion_model_name, 
+            low_cpu_mem_usage=True, 
+            torch_dtype=torch.float16
         ).to('cpu')
+        return tokenizer, model
     except RuntimeError as e:
         print(f"[ERROR] GoEmotions model OOM: {e}. Trying fallback...")
         fallback_model = "distilbert-base-uncased"
-        _goemotions_tokenizer = AutoTokenizer.from_pretrained(fallback_model)
+        tokenizer = AutoTokenizer.from_pretrained(fallback_model)
         model = AutoModelForSequenceClassification.from_pretrained(
             fallback_model, low_cpu_mem_usage=True
         ).to('cpu')
-    return _goemotions_tokenizer, model
+        return tokenizer, model
+
+def clear_goemotions():
+    """
+    Placeholder function for compatibility (no longer caches models).
+    """
+    # No longer needed since we don't cache models
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+# def clear_goemotions():
+#     """
+#     Frees GoEmotions tokenizer and clears memory.
+#     """
+#     global _goemotions_tokenizer, _goemotions_model
+#     with _goemotions_lock:
+#         _goemotions_tokenizer = None
+#         _goemotions_model = None
+#         gc.collect()
+#         if torch.cuda.is_available():
+#             torch.cuda.empty_cache()
 
 # ------------ EMOTION INTENT FUNCTION ------------ #
 
@@ -150,12 +164,8 @@ def get_intent(text):
         pred = torch.argmax(probs, dim=1).item()
         emotion_label = emotion_model.config.id2label[pred]
     
-    # Aggressive cleanup
+    # Basic cleanup
     del inputs, outputs, probs
-    import gc
-    gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
     intent = emotion_to_intent.get(emotion_label, "neutral")
     print(f"[DEBUG] Detected emotion: '{emotion_label}'")
     print(f"[Intent detected: {intent}]")
@@ -174,6 +184,7 @@ def generate_response(user_input, intent, history):
         dialogue = "\n".join(history[-6:])
         full_prompt = f"{system_prompt}{dialogue}\nUser: {user_input}\nBot:"
         
+        # Load models using functions (maintains compatibility with app.py)
         blender_tokenizer = load_blender_tokenizer()
         blender_model = load_blender_model()
         

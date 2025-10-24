@@ -10,7 +10,7 @@ from .NLP import (
     clear_goemotions,
     get_goemotions
 )
-from ..utils.goemotions_loader import load_goemotions, clear_goemotions
+# from ..utils.goemotions_loader import load_goemotions, clear_goemotions
 
 __all__ = [
     "SwearFilter",

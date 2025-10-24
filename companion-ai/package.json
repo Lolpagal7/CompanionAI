@@ -23,10 +23,13 @@
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@gradio/client": "^1.17.1",
+    "@types/multer": "^2.0.0",
     "@types/react-easy-crop": "^1.16.0",
     "axios": "^1.11.0",
     "express": "^4.18.2",
     "firebase": "^12.1.0",
+    "firebase-admin": "^13.5.0",
+    "multer": "^2.0.2",
     "react-easy-crop": "^5.5.0",
     "zod": "^3.23.8"
   },
